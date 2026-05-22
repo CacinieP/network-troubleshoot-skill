@@ -3,15 +3,29 @@
 </p>
 
 <p align="center">
-  通用网络故障排查技能，支持 <strong>15+ AI 编程代理</strong>。<br>
-  基于 112+ 真实编程代理交互会话 + 行业最佳实践构建。
+  每个开发者都会遇到网络错误。<br>
+  这个技能让<strong>任何 AI 编程代理</strong>帮你自动排查修复。
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/CacinieP/network-troubleshoot-skill?style=social" alt="GitHub stars">
+  <img src="https://img.shields.io/badge/agents-17%2B-blue" alt="17+ agents">
+  <img src="https://img.shields.io/badge/sessions-112%2B-green" alt="112+ sessions">
+  <img src="https://img.shields.io/badge/license-MIT-yellow" alt="MIT License">
+  <img src="https://img.shields.io/badge/platform-Win%20%7C%20Mac%20%7C%20Linux-lightgrey" alt="Platform">
 </p>
 
 <p align="center">
   <a href="./README.md">English</a> ·
   <a href="./docs/TROUBLESHOOTING_GUIDE.md">故障排查指南</a> ·
-  <a href="./docs/PATTERNS_FROM_AGENTS.md">代理交互模式分析</a>
+  <a href="./docs/PATTERNS_FROM_AGENTS.md">代理交互模式分析</a> ·
+  <a href="./CONTRIBUTING.md">贡献指南</a>
 </p>
+
+---
+
+> **一次复制粘贴**，让你的 AI 编程代理获得网络调试超能力。
+> 支持 Claude Code、Cursor、GitHub Copilot、Windsurf、Cline、Codex、Continue、Aider、Kiro、Trae、CodeBuddy、OpenCode、Augment、Gemini、Cody、Amazon Q 等等。
 
 ---
 
@@ -51,13 +65,25 @@
 ## 快速安装
 
 ```bash
-git clone https://github.com/CacinieP/network-troubleshoot-skill.git
-cd network-troubleshoot-skill
+# 一行命令安装 — 把 <agent> 替换成你的工具名
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- <agent>
+
+# 示例：
+curl -fsSL ... | bash -s -- cursor       # Cursor
+curl -fsSL ... | bash -s -- claude-code  # Claude Code
+curl -fsSL ... | bash -s -- copilot      # GitHub Copilot
+curl -fsSL ... | bash -s -- cline        # Cline
+curl -fsSL ... | bash -s -- windsurf     # Windsurf
+curl -fsSL ... | bash -s -- generic      # 其他任何代理
 ```
 
-根据你使用的代理复制对应的适配器：
+<details>
+<summary>手动安装（复制单个文件）</summary>
 
 ```bash
+git clone https://github.com/CacinieP/network-troubleshoot-skill.git
+cd network-troubleshoot-skill
+
 # Claude Code
 cp skills/network-troubleshoot.md ~/.claude/skills/
 
@@ -78,7 +104,6 @@ mkdir -p .continue/rules && cp adapters/continue/rules/network-troubleshoot.md .
 
 # Aider
 cp adapters/aider/CONVENTIONS-network.md .
-# 然后在 .aider.conf.yml 中添加 → read: [CONVENTIONS-network.md]
 
 # Kiro
 mkdir -p .kiro/steering && cp adapters/kiro/steering/network-troubleshoot.md .kiro/steering/
@@ -104,6 +129,8 @@ mkdir -p .amazonq/rules && cp adapters/amazon-q/.amazonq/rules/network-troublesh
 # 其他任何代理
 cp adapters/generic/network-troubleshoot.md .
 ```
+
+</details>
 
 ## 功能特性
 
@@ -275,3 +302,10 @@ network-troubleshoot-skill/
 ## 许可证
 
 [MIT](LICENSE)
+
+---
+
+<p align="center">
+  如果这个工具帮你省了一次网络调试的时间，给个 ⭐ 吧！<br>
+  这能帮助更多开发者发现这个工具。
+</p>

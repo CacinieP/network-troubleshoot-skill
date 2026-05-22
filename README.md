@@ -3,17 +3,45 @@
 </p>
 
 <p align="center">
-  Universal network troubleshooting skill for <strong>15+ AI coding agents</strong>.<br>
-  Built from 112+ real coding agent sessions + industry best practices.
+  Every developer hits network errors.<br>
+  This skill makes <strong>any AI coding agent</strong> fix them for you.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/CacinieP/network-troubleshoot-skill?style=social" alt="GitHub stars">
+  <img src="https://img.shields.io/badge/agents-17%2B-blue" alt="17+ agents">
+  <img src="https://img.shields.io/badge/sessions-112%2B-green" alt="112+ sessions">
+  <img src="https://img.shields.io/badge/license-MIT-yellow" alt="MIT License">
+  <img src="https://img.shields.io/badge/platform-Win%20%7C%20Mac%20%7C%20Linux-lightgrey" alt="Platform">
 </p>
 
 <p align="center">
   <a href="./README_CN.md">中文文档</a> ·
   <a href="./docs/TROUBLESHOOTING_GUIDE.md">Troubleshooting Guide</a> ·
-  <a href="./docs/PATTERNS_FROM_AGENTS.md">Patterns from Agents</a>
+  <a href="./docs/PATTERNS_FROM_AGENTS.md">Patterns from Agents</a> ·
+  <a href="./CONTRIBUTING.md">Contributing</a>
 </p>
 
 ---
+
+> **One copy-paste** to give your AI coding agent network debugging superpowers.
+> Works with Claude Code, Cursor, GitHub Copilot, Windsurf, Cline, Codex, Continue, Aider, Kiro, Trae, CodeBuddy, OpenCode, Augment, Gemini, Cody, Amazon Q, and more.
+
+---
+
+## One-Click Install
+
+```bash
+# Replace <agent> with: cursor, copilot, windsurf, cline, continue, aider,
+# kiro, trae, codebuddy, opencode, augment, gemini, cody, amazon-q, generic
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- <agent>
+
+# Claude Code (installs globally)
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- claude-code
+
+# Or clone and copy manually:
+git clone https://github.com/CacinieP/network-troubleshoot-skill.git
+```
 
 ## What It Does
 
@@ -51,13 +79,25 @@ When network errors occur, this skill guides your AI coding agent through a stru
 ## Quick Start
 
 ```bash
-git clone https://github.com/CacinieP/network-troubleshoot-skill.git
-cd network-troubleshoot-skill
+# One command — replace <agent> with your tool name
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- <agent>
+
+# Examples:
+curl -fsSL ... | bash -s -- cursor       # Cursor
+curl -fsSL ... | bash -s -- claude-code  # Claude Code
+curl -fsSL ... | bash -s -- copilot      # GitHub Copilot
+curl -fsSL ... | bash -s -- cline        # Cline
+curl -fsSL ... | bash -s -- windsurf     # Windsurf
+curl -fsSL ... | bash -s -- generic      # Any other agent
 ```
 
-Then copy the right adapter for your agent:
+<details>
+<summary>Manual installation (copy-paste individual files)</summary>
 
 ```bash
+git clone https://github.com/CacinieP/network-troubleshoot-skill.git
+cd network-troubleshoot-skill
+
 # Claude Code
 cp skills/network-troubleshoot.md ~/.claude/skills/
 
@@ -78,7 +118,6 @@ mkdir -p .continue/rules && cp adapters/continue/rules/network-troubleshoot.md .
 
 # Aider
 cp adapters/aider/CONVENTIONS-network.md .
-# Then add to .aider.conf.yml → read: [CONVENTIONS-network.md]
 
 # Kiro
 mkdir -p .kiro/steering && cp adapters/kiro/steering/network-troubleshoot.md .kiro/steering/
@@ -104,6 +143,8 @@ mkdir -p .amazonq/rules && cp adapters/amazon-q/.amazonq/rules/network-troublesh
 # Any other agent
 cp adapters/generic/network-troubleshoot.md .
 ```
+
+</details>
 
 ## Features
 
@@ -198,6 +239,8 @@ network-troubleshoot-skill/
 ├── docs/
 │   ├── TROUBLESHOOTING_GUIDE.md           # Full reference guide
 │   └── PATTERNS_FROM_AGENTS.md            # Data-driven pattern analysis
+├── install.sh                             # One-click installer
+├── CONTRIBUTING.md                        # How to contribute
 ├── LICENSE
 ├── README.md
 └── README_CN.md
@@ -252,3 +295,10 @@ Contributions welcome:
 ## License
 
 [MIT](LICENSE)
+
+---
+
+<p align="center">
+  If this saved you from a network debugging session, consider giving it a ⭐!<br>
+  It helps other developers discover this tool.
+</p>

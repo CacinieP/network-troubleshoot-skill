@@ -1,7 +1,7 @@
 ---
-name: network-troubleshoot
-description: 网络故障诊断与修复规则，当检测到网络错误时自动触发系统化诊断流程
-type: rule
+description: Network troubleshooting — systematic diagnosis and resolution for connectivity, DNS, proxy, SSL, HTTP errors
+globs:
+alwaysApply: true
 ---
 
 # Network Troubleshooting Rule
@@ -30,8 +30,6 @@ When network errors occur, follow this structured diagnostic workflow.
 | fatal: unable to access (git) | Git |
 
 ## Diagnostic Commands
-
-Pick based on classification:
 
 **Connectivity**: `ping <host>`, `curl -v telnet://<host>:<port>`, `nc -zv <host> <port>`
 **DNS**: `nslookup <host>`, `nslookup <host> 8.8.8.8`, `dig <host>`

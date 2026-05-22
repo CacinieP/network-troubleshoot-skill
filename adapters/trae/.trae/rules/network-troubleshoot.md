@@ -1,4 +1,10 @@
-# Network Troubleshooting Rules
+---
+alwaysApply: false
+description: Network troubleshooting — systematic diagnosis and resolution for connectivity, DNS, proxy, SSL, HTTP errors
+globs:
+---
+
+# Network Troubleshooting
 
 When detecting network errors in commands or code, apply systematic diagnosis.
 

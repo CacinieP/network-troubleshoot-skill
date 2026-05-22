@@ -64,18 +64,18 @@
 
 ## 快速安装
 
+**macOS / Linux / Windows Git Bash:**
 ```bash
-# 一行命令安装 — 把 <agent> 替换成你的工具名
-curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- <agent>
-
-# 示例：
-curl -fsSL ... | bash -s -- cursor       # Cursor
-curl -fsSL ... | bash -s -- claude-code  # Claude Code
-curl -fsSL ... | bash -s -- copilot      # GitHub Copilot
-curl -fsSL ... | bash -s -- cline        # Cline
-curl -fsSL ... | bash -s -- windsurf     # Windsurf
-curl -fsSL ... | bash -s -- generic      # 其他任何代理
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- cursor
 ```
+
+**Windows PowerShell:**
+```powershell
+irm https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.ps1 | iex
+# 然后输入: cursor
+```
+
+支持：`cursor`、`claude-code`、`copilot`、`windsurf`、`cline`、`codex`、`continue`、`aider`、`kiro`、`trae`、`codebuddy`、`opencode`、`augment`、`gemini`、`cody`、`amazon-q`、`generic`
 
 <details>
 <summary>手动安装（复制单个文件）</summary>

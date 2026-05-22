@@ -31,17 +31,18 @@
 
 ## One-Click Install
 
+**macOS / Linux / Windows Git Bash:**
 ```bash
-# Replace <agent> with: cursor, copilot, windsurf, cline, continue, aider,
-# kiro, trae, codebuddy, opencode, augment, gemini, cody, amazon-q, generic
-curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- <agent>
-
-# Claude Code (installs globally)
-curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- claude-code
-
-# Or clone and copy manually:
-git clone https://github.com/CacinieP/network-troubleshoot-skill.git
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- cursor
 ```
+
+**Windows PowerShell:**
+```powershell
+irm https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.ps1 | iex
+# Then enter: cursor
+```
+
+Supported: `cursor`, `claude-code`, `copilot`, `windsurf`, `cline`, `codex`, `continue`, `aider`, `kiro`, `trae`, `codebuddy`, `opencode`, `augment`, `gemini`, `cody`, `amazon-q`, `generic`
 
 ## What It Does
 

@@ -3,33 +3,100 @@
 When detecting network errors in code or commands, apply systematic diagnosis.
 
 ## Triggers
-- Any error containing: ECONNREFUSED, ECONNRESET, ETIMEDOUT, ENOTFOUND, timeout, connection refused, connection reset, SSL, certificate, proxy, DNS, 502, 503, 504
-- Commands failing: npm install, pip install, git push/pull, docker pull, curl, wget
-- User mentions: network, connect, timeout, DNS, proxy, VPN, offline
+- ECONNREFUSED, ECONNRESET, ETIMEDOUT, ENOTFOUND, timeout, connection refused, connection reset, SSL, certificate, proxy, DNS, 502, 503, 504
+- npm install, pip install, git push/pull, docker pull, curl, wget failing
+- network, connect, timeout, DNS, proxy, VPN, offline
+
+## Error Classification
+- ECONNREFUSED → Service not running, wrong port, firewall rejecting
+- ECONNRESET → Firewall reset, server crash, keepalive timeout
+- ETIMEDOUT → Network unreachable, firewall drop, DNS timeout
+- ENOTFOUND → DNS resolution failure
+- EACCES, EPERM → Firewall / Permissions
+- Proxy errors → Proxy not running or misconfigured
+- SSL/TLS errors → Certificate chain, expiry, CA trust
+- HTTP 5xx → Server-side issue
+- npm ERR! network, pip timeout → Package Manager
+- fatal: unable to access (git) → Git / Network
 
 ## Diagnostic Flow
 
 ### Step 1: Identify Category
-- ECONNREFUSED → Service not running or port blocked
-- ETIMEDOUT → Network unreachable or firewall dropping
-- ENOTFOUND → DNS failure
-- Proxy error → Proxy misconfigured or not running
-- SSL error → Certificate chain or TLS version issue
-- HTTP 5xx → Server-side issue
+Match the error message to a category above.
 
-### Step 2: Run Commands
-Connectivity: `ping <host>`, `nc -zv <host> <port>`
-DNS: `nslookup <host>`, `nslookup <host> 8.8.8.8`
-Proxy: Check HTTP_PROXY env, test `curl -x proxy url`
-SSL: `openssl s_client -connect <host>:443`
+### Step 2: Run Diagnostics
+
+**Connectivity**:
+```bash
+ping -c 4 <host>          # Linux/macOS
+ping -n 4 <host>          # Windows
+curl -v telnet://<host>:<port> --connect-timeout 5   # cross-platform port check
+nc -zv <host> <port>      # Linux/macOS only
+```
+
+**DNS**:
+```bash
+nslookup <host>
+nslookup <host> 8.8.8.8
+```
+
+**Proxy**:
+```bash
+echo $HTTP_PROXY $HTTPS_PROXY $ALL_PROXY
+curl -x http://127.0.0.1:7890 https://www.google.com --connect-timeout 5
+git config --global --get http.proxy
+npm config get proxy
+```
+
+**SSL**:
+```bash
+openssl s_client -connect <host>:443 -showcerts </dev/null
+echo | openssl s_client -connect <host>:443 2>/dev/null | openssl x509 -noout -dates
+curl -vvv https://<host> 2>&1 | grep -E "SSL|TLS|certificate"
+```
+
+**HTTP**:
+```bash
+curl -vvv -o /dev/null -w "HTTP %{http_code}\nTime: %{time_total}s\n" https://<host>/<path>
+```
+
+**Package Managers**:
+```bash
+npm config list && npm ping
+pip config list
+docker info 2>&1 | grep -i "registry\|proxy"
+git config --list | grep -i proxy
+```
 
 ### Step 3: Apply Fix
-- DNS fail → Change DNS to 8.8.8.8, flush cache
-- Proxy down → Start proxy app, verify port listening
-- npm fail → Set registry mirror, configure proxy
-- git fail → `git config --global http.proxy`
-- SSL fail → Update CA bundle, check cert chain
-- General timeout → Check route with traceroute
+
+| Finding | Fix |
+|---|---|
+| No internet | Check cable/WiFi, restart router |
+| DNS fails | Change DNS to 8.8.8.8, flush cache |
+| Proxy down | Start Clash/V2Ray, verify port listening |
+| Proxy works, target blocked | Switch proxy node |
+| SSL cert expired | Renew cert; dev: `NODE_TLS_REJECT_UNAUTHORIZED=0` |
+| SSL self-signed | Import CA to trust store |
+| HTTP 407 | Set proxy credentials |
+| HTTP 502/503/504 | Server issue, retry |
+| npm timeout | `npm config set registry https://registry.npmmirror.com` |
+| pip timeout | `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple` |
+| pip SSL trust | `pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn` |
+| git fails | `git config --global http.proxy http://127.0.0.1:7890` |
+| docker pull fails | Add mirror to `/etc/docker/daemon.json` |
 
 ### Step 4: Verify
-Re-run the failing command.
+Re-run the failing command to confirm the fix works.
+
+## China Developer Quick Setup
+
+```bash
+export HTTP_PROXY=http://127.0.0.1:7890
+export HTTPS_PROXY=http://127.0.0.1:7890
+export ALL_PROXY=socks5://127.0.0.1:7891
+npm config set registry https://registry.npmmirror.com
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn
+git config --global http.proxy http://127.0.0.1:7890
+```

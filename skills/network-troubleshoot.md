@@ -50,9 +50,11 @@ Match against these categories by error pattern:
 | `ECONNREFUSED`, `Connection refused`, `ERR_CONNECTION_REFUSED` | Connectivity / Port |
 | `ECONNRESET`, `Connection reset`, `socket hang up` | Connectivity / Firewall |
 | `ETIMEDOUT`, `timed out`, `ERR_CONNECTION_TIMED_OUT` | Timeout / Routing |
-| `ENOTFOUND`, `ERR_NAME_NOT_RESOLVED`, `getaddrinfo` | DNS |
+| `ENOTFOUND`, `ERR_NAME_NOT_RESOLVED`, `getaddrinfo`, `EAI_NONAME` | DNS |
 | `ERR_PROXY_CONNECTION_FAILED`, `ECONNREFUSED 127.0.0.1:7890` | Proxy |
 | `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, `CERT_HAS_EXPIRED`, `self signed` | SSL/TLS |
+| `ERR_OSSL_EVP_UNSUPPORTED` | SSL / OpenSSL version mismatch |
+| `HPE_INVALID_CONSTANT` | HTTP parse error (often proxy HTML response) |
 | `HTTP 403`, `HTTP 407`, `HTTP 502/503/504` | HTTP / Proxy |
 | `EACCES`, `EPERM` | Firewall / Permissions |
 | `npm ERR! network`, `pip install` timeout | Package Manager |
@@ -252,6 +254,7 @@ For users behind GFW (Great Firewall of China):
 2. **npm registry**: `npm config set registry https://registry.npmmirror.com`
 
 3. **pip mirror**: `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple`
+   If SSL trust errors occur: `pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn`
 
 4. **Docker mirror**: Configure mirror in `/etc/docker/daemon.json`
    ```json
@@ -304,6 +307,9 @@ curl -x http://127.0.0.1:7890 https://www.google.com -o /dev/null -w "%{http_cod
 - `fatal: unable to access 'https://github.com/...'` -> git network issue
 - `ssh: connect to host ... port 22: Connection refused` -> SSH not available
 - `docker: Cannot connect to the Docker daemon` -> Docker not running
+- `EAI_NONAME` -> DNS resolution failed (similar to ENOTFOUND)
+- `ERR_OSSL_EVP_UNSUPPORTED` -> OpenSSL version mismatch — upgrade Node.js or use `--openssl-legacy-provider`
+- `HPE_INVALID_CONSTANT` -> HTTP parse error — often proxy returning HTML error page instead of expected response
 
 ## Workflow Summary
 

@@ -1,17 +1,8 @@
-# Network Troubleshoot
+# Network Troubleshooting
 
-You are a network diagnostics expert. When a network issue is reported, systematically diagnose and resolve it.
+Universal adapter — works with any AI coding agent that reads markdown instructions.
 
-## Symptom Collection
-
-Collect from error output or ask the user:
-- Error message (ECONNREFUSED, ETIMEDOUT, ENOTFOUND, SSL errors, HTTP status)
-- Target host/port/URL
-- What command triggered it (npm, git, curl, docker, browser)
-- Scope: everything failing or just specific hosts
-- Environment: OS, network type, proxy/VPN usage
-
-## Classification
+## Error Classification
 
 | Error Pattern | Category |
 |---|---|
@@ -19,72 +10,67 @@ Collect from error output or ask the user:
 | ECONNRESET, Connection reset | Connectivity / Firewall |
 | ETIMEDOUT, timed out | Timeout / Routing |
 | ENOTFOUND, ERR_NAME_NOT_RESOLVED | DNS |
+| EACCES, EPERM | Firewall / Permissions |
 | ERR_PROXY_CONNECTION_FAILED, proxy connection refused | Proxy |
 | UNABLE_TO_VERIFY_LEAF_SIGNATURE, CERT_HAS_EXPIRED | SSL/TLS |
 | HTTP 403, 407, 502, 503, 504 | HTTP / Proxy |
 | npm ERR! network, pip timeout | Package Manager |
 | fatal: unable to access, git push failed | Git / Network |
 
-## Diagnostics
+## Diagnostic Commands
 
-Run these commands based on the classified category. Prefer parallel execution.
+> On Windows Git Bash: `nc`, `dig`, `traceroute` are unavailable. Use `curl`, `nslookup`, `tracert` instead.
 
 ### Connectivity
-
 ```bash
 ping -c 4 <host>          # Linux/macOS
 ping -n 4 <host>          # Windows
-curl -v telnet://<host>:<port> --connect-timeout 5
-nc -zv <host> <port>      # Linux/macOS
-Test-NetConnection -ComputerName <host> -Port <port>  # Windows
+curl -v telnet://<host>:<port> --connect-timeout 5   # cross-platform port check
+nc -zv <host> <port>      # Linux/macOS only
 ```
 
 ### DNS
-
 ```bash
 nslookup <host>
 nslookup <host> 8.8.8.8
-dig <host>                 # Linux/macOS
-cat /etc/hosts             # Linux/macOS
-type C:\Windows\System32\drivers\etc\hosts  # Windows
+dig <host>                 # Linux/macOS only
+cat /etc/hosts | grep -v "^#"
+cat /c/Windows/System32/drivers/etc/hosts    # Git Bash on Windows
 ipconfig /flushdns         # Windows
 ```
 
 ### Proxy
-
 ```bash
-echo $HTTP_PROXY $HTTPS_PROXY $ALL_PROXY   # Linux/macOS
-echo %HTTP_PROXY% %HTTPS_PROXY%             # Windows
+echo $HTTP_PROXY $HTTPS_PROXY $ALL_PROXY $NO_PROXY
+curl -v http://127.0.0.1:7890 --connect-timeout 2     # check proxy port
 curl -x http://127.0.0.1:7890 https://www.google.com --connect-timeout 5
 git config --global --get http.proxy
 npm config get proxy
+pip config get global.proxy
 ```
 
 ### SSL/TLS
-
 ```bash
 openssl s_client -connect <host>:443 -showcerts </dev/null
 echo | openssl s_client -connect <host>:443 2>/dev/null | openssl x509 -noout -dates
-curl -vvv https://<host> 2>&1 | grep -E "SSL|TLS|certificate"
+curl -vvv https://<host> 2>&1 | grep -E "SSL|TLS|certificate|error"
 ```
 
 ### HTTP
-
 ```bash
-curl -vvv -o /dev/null -w "HTTP %{http_code}\nTime: %{time_total}s\nDNS: %{time_namelookup}s\n" https://<host>/<path>
+curl -vvv -o /dev/null -w "HTTP %{http_code}\nTime: %{time_total}s\nDNS: %{time_namelookup}s\nConnect: %{time_connect}s\nTLS: %{time_appconnect}s\n" https://<host>/<path>
 curl -I https://<host>/<path>
 ```
 
 ### Performance
-
 ```bash
 traceroute -n <host>       # Linux/macOS
 tracert -d <host>          # Windows
 pathping <host>            # Windows
+mtr -rwzbc 50 <host>       # Linux/macOS, if installed
 ```
 
 ### Package Managers
-
 ```bash
 npm config list && npm ping
 pip config list
@@ -106,25 +92,43 @@ git config --list | grep -i proxy
 | HTTP 407 Proxy Auth | Configure proxy credentials |
 | HTTP 403 Forbidden | Check API key, IP whitelist, CORS |
 | HTTP 502/503/504 | Server-side issue, retry with backoff |
-| npm timeout | Set registry mirror, configure npm proxy |
+| npm timeout | `npm config set registry https://registry.npmmirror.com` |
+| pip timeout | `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple` |
+| pip SSL trust error | `pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn` |
 | git push fails | `git config --global http.proxy http://127.0.0.1:7890` |
+| docker pull fails | Add mirror to `/etc/docker/daemon.json`: `{"registry-mirrors": ["https://mirror.ccs.tencentyun.com"]}` |
+| Gradle/Maven fails | Configure proxy in `~/.gradle/gradle.properties` or `~/.m2/settings.xml` |
 
-## China-Specific Fixes
+## China Developer Quick Setup
 
 ```bash
 export HTTP_PROXY=http://127.0.0.1:7890
 export HTTPS_PROXY=http://127.0.0.1:7890
+export ALL_PROXY=socks5://127.0.0.1:7891
 npm config set registry https://registry.npmmirror.com
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn
 git config --global http.proxy http://127.0.0.1:7890
 ```
 
 ## Verification
 
-After applying fix, re-run the failed command and verify with:
+After applying fix, re-run the failed command and verify:
 ```bash
 curl -I https://<previously-failing-host>
 nslookup <host>
+curl -x http://127.0.0.1:7890 https://www.google.com -o /dev/null -w "%{http_code}"
 ```
 
-Explain what each diagnostic command does and what the output means. Present findings before suggesting fixes.
+## Error Quick Reference
+
+- `ECONNREFUSED`: Target not listening on that port
+- `ECONNRESET`: Connection dropped — firewall or idle timeout
+- `ETIMEDOUT`: No response — network unreachable or firewall block
+- `ENOTFOUND` / `EAI_NONAME`: DNS resolution failed
+- `EPIPE`: Writing to closed connection
+- `ERR_PROXY_CONNECTION_FAILED`: Proxy not running or wrong config
+- `CERT_HAS_EXPIRED`: Server certificate expired
+- `UNABLE_TO_VERIFY_LEAF_SIGNATURE`: Unknown CA in certificate chain
+- `ERR_OSSL_EVP_UNSUPPORTED`: OpenSSL version mismatch — upgrade Node.js
+- `HPE_INVALID_CONSTANT`: HTTP parse error — often proxy returning HTML error page

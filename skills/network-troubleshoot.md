@@ -60,7 +60,15 @@ Match against these categories by error pattern:
 
 ## Step 3: Run Diagnostics
 
-Execute diagnostic commands based on classification. Run multiple in parallel when possible.
+First detect the OS, then pick the right commands. Run multiple in parallel when possible.
+
+```bash
+# Detect OS
+uname -s                    # "Linux", "Darwin" (macOS), or "MINGW"* / "MSYS"* (Windows Git Bash)
+echo %OS%                   # Windows CMD: "Windows_NT"
+```
+
+> **Windows Git Bash limitations**: `nc`, `dig`, `traceroute` are not available. Use `curl`, `nslookup`, `tracert`, `Test-NetConnection` instead.
 
 ### 3A: Connectivity Diagnostics
 
@@ -69,11 +77,12 @@ Execute diagnostic commands based on classification. Run multiple in parallel wh
 ping -c 4 <host>          # Linux/macOS
 ping -n 4 <host>          # Windows
 
-# Port check
+# Port check (cross-platform — use this instead of nc)
 curl -v telnet://<host>:<port> --connect-timeout 5
-# or
-nc -zv <host> <port>      # Linux/macOS
-Test-NetConnection -ComputerName <host> -Port <port>  # Windows PowerShell
+
+# Alternative port check
+nc -zv <host> <port>                            # Linux/macOS only
+powershell.exe -Command "Test-NetConnection -ComputerName <host> -Port <port>"  # Windows
 
 # Gateway check
 ip route                   # Linux
@@ -84,18 +93,21 @@ netstat -rn                # macOS
 ### 3B: DNS Diagnostics
 
 ```bash
-# DNS resolution
+# DNS resolution (cross-platform)
 nslookup <host>
-dig <host>                 # Linux/macOS
-Resolve-DnsName <host>     # Windows PowerShell
 
-# DNS with specific server
+# Additional DNS tools
+dig <host>                 # Linux/macOS only
+Resolve-DnsName <host>     # Windows PowerShell only
+
+# DNS with specific server (cross-platform)
 nslookup <host> 8.8.8.8
-dig @8.8.8.8 <host>
+dig @8.8.8.8 <host>          # Linux/macOS only
 
 # Check hosts file
-cat /etc/hosts             # Linux/macOS
-type C:\Windows\System32\drivers\etc\hosts  # Windows
+cat /etc/hosts             # Linux/macOS/Git Bash
+cat /c/Windows/System32/drivers/etc/hosts   # Git Bash on Windows
+type C:\Windows\System32\drivers\etc\hosts  # Windows CMD
 
 # DNS cache
 ipconfig /displaydns       # Windows
@@ -106,13 +118,13 @@ sudo systemd-resolve --statistics  # Linux systemd
 
 ```bash
 # Check proxy environment variables
-echo $HTTP_PROXY $HTTPS_PROXY $ALL_PROXY $NO_PROXY   # Linux/macOS
+echo $HTTP_PROXY $HTTPS_PROXY $ALL_PROXY $NO_PROXY   # Linux/macOS/Git Bash
 echo %HTTP_PROXY% %HTTPS_PROXY%                       # Windows CMD
-$env:HTTP_PROXY; $env:HTTPS_PROXY                     # Windows PS
+powershell.exe -Command "echo $env:HTTP_PROXY $env:HTTPS_PROXY"  # from Git Bash to PS
 
-# Check if proxy port is listening
+# Check if proxy port is listening (cross-platform)
 curl -v http://127.0.0.1:7890 --connect-timeout 2
-# Common proxy ports: 7890 (Clash), 1080 (SOCKS), 8080, 10809 (V2Ray)
+# Common proxy ports: 7890 (Clash HTTP), 7891 (Clash SOCKS), 1080 (SOCKS), 8080, 10809 (V2Ray)
 
 # Test through proxy
 curl -x http://127.0.0.1:7890 -v https://www.google.com --connect-timeout 5
@@ -131,14 +143,14 @@ reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v 
 ### 3D: SSL/TLS Diagnostics
 
 ```bash
-# Certificate chain check
+# Certificate chain check (openssl works on all platforms)
 openssl s_client -connect <host>:443 -showcerts </dev/null
 
 # Certificate expiry
 echo | openssl s_client -connect <host>:443 2>/dev/null | openssl x509 -noout -dates
 
-# Full SSL debug
-curl -vvv https://<host> 2>&1 | grep -E "SSL|TLS|certificate|issuer|subject"
+# Full SSL debug (cross-platform)
+curl -vvv https://<host> 2>&1 | grep -E "SSL|TLS|certificate|issuer|subject|error"
 
 # Windows certificate store
 certutil -store Root | grep -i "<issuer>"
@@ -167,15 +179,15 @@ curl -X POST -H "Content-Type: application/json" -d '<body>' -vvv https://<host>
 traceroute <host>          # Linux/macOS
 tracert -d <host>          # Windows
 
-# Path analysis (Windows)
+# Path analysis (Windows only)
 pathping <host>
 
-# MTR (if available)
+# MTR (Linux/macOS only, if installed)
 mtr -rwzbc 50 <host>
 
 # Latency test
 ping -c 20 <host> | tail -1   # Linux/macOS
-ping -n 20 <host> | findstr "Average"  # Windows
+ping -n 20 <host> 2>&1 | tail -3  # Windows (output is localized, tail grabs summary)
 ```
 
 ### 3G: Package Manager Specific

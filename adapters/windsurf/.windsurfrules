@@ -1,0 +1,35 @@
+# Network Troubleshoot Rules
+
+When detecting network errors in code or commands, apply systematic diagnosis.
+
+## Triggers
+- Any error containing: ECONNREFUSED, ECONNRESET, ETIMEDOUT, ENOTFOUND, timeout, connection refused, connection reset, SSL, certificate, proxy, DNS, 502, 503, 504
+- Commands failing: npm install, pip install, git push/pull, docker pull, curl, wget
+- User mentions: network, connect, timeout, DNS, proxy, VPN, offline
+
+## Diagnostic Flow
+
+### Step 1: Identify Category
+- ECONNREFUSED → Service not running or port blocked
+- ETIMEDOUT → Network unreachable or firewall dropping
+- ENOTFOUND → DNS failure
+- Proxy error → Proxy misconfigured or not running
+- SSL error → Certificate chain or TLS version issue
+- HTTP 5xx → Server-side issue
+
+### Step 2: Run Commands
+Connectivity: `ping <host>`, `nc -zv <host> <port>`
+DNS: `nslookup <host>`, `nslookup <host> 8.8.8.8`
+Proxy: Check HTTP_PROXY env, test `curl -x proxy url`
+SSL: `openssl s_client -connect <host>:443`
+
+### Step 3: Apply Fix
+- DNS fail → Change DNS to 8.8.8.8, flush cache
+- Proxy down → Start proxy app, verify port listening
+- npm fail → Set registry mirror, configure proxy
+- git fail → `git config --global http.proxy`
+- SSL fail → Update CA bundle, check cert chain
+- General timeout → Check route with traceroute
+
+### Step 4: Verify
+Re-run the failing command.

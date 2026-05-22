@@ -1,0 +1,31 @@
+# .clinerules
+
+## Network Troubleshooting Mode
+
+When the user reports network errors or connectivity issues:
+
+### Error Classification
+- ECONNREFUSED → Service not running, wrong port, firewall rejecting
+- ECONNRESET → Firewall reset, server crash, keepalive timeout
+- ETIMEDOUT → Network unreachable, firewall drop, DNS timeout
+- ENOTFOUND → DNS resolution failure
+- Proxy errors → Proxy not running or misconfigured
+- SSL/TLS errors → Certificate chain, expiry, CA trust
+- HTTP 5xx → Server-side issue
+
+### Diagnostic Sequence
+1. `ping <host>` → basic connectivity
+2. `nslookup <host>` → DNS resolution
+3. `nc -zv <host> <port>` or `Test-NetConnection` → port check
+4. `curl -vvv https://<host>` → full HTTP/SSL debug
+5. Check proxy env vars and tool-specific proxy configs
+
+### Resolution Patterns
+- No internet → Check cable/WiFi, restart router
+- DNS fails → Switch to 8.8.8.8, flush cache
+- Proxy down → Start Clash/V2Ray, verify port 7890
+- npm fails → `npm config set registry https://registry.npmmirror.com`
+- pip fails → `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple`
+- git fails → `git config --global http.proxy http://127.0.0.1:7890`
+- SSL error → Update CA bundle, check cert dates
+- docker fails → Configure daemon.json with mirror

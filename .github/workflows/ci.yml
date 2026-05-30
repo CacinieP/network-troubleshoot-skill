@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate shell installer syntax
+        run: bash -n install.sh
+
+      - name: Validate PowerShell installer syntax
+        shell: pwsh
+        run: |
+          $script = Get-Content -Raw install.ps1
+          [scriptblock]::Create($script) | Out-Null
+
+      - name: Check required adapter files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f skills/network-troubleshoot.md
+          test -f adapters/cursor/network-troubleshoot.mdc
+          test -f adapters/github-copilot/copilot-instructions.md
+          test -f adapters/codex/network-troubleshoot.md
+          test -f adapters/generic/network-troubleshoot.md

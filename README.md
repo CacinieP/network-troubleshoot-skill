@@ -9,6 +9,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/stars/CacinieP/network-troubleshoot-skill?style=social" alt="GitHub stars">
+  <img src="https://img.shields.io/github/actions/workflow/status/CacinieP/network-troubleshoot-skill/ci.yml?branch=main&style=flat-square" alt="CI">
   <img src="https://img.shields.io/badge/agents-17%2B-blue" alt="17+ agents">
   <img src="https://img.shields.io/badge/sessions-112%2B-green" alt="112+ sessions">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="MIT License">
@@ -43,6 +44,12 @@ irm https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/i
 ```
 
 Supported: `cursor`, `claude-code`, `copilot`, `windsurf`, `cline`, `codex`, `continue`, `aider`, `kiro`, `trae`, `codebuddy`, `opencode`, `augment`, `gemini`, `cody`, `amazon-q`, `generic`
+
+## Why Use This
+
+Most AI-agent rule repos are generic prompt collections. This one is narrowly focused on network failures that stop real development work: DNS failures, proxy/VPN cascades, SSL errors, registry timeouts, package-manager failures, Docker pulls, Git fetches, and HTTP 4xx/5xx issues.
+
+The goal is simple: when an agent sees a network error, it should gather the right diagnostics, classify the symptom, choose the likely root cause, apply a reversible fix, and verify the original command again.
 
 ## What It Does
 

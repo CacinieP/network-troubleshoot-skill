@@ -243,6 +243,72 @@ dig +stats example.com | grep "Query time"
    - Python: export PYTHONHTTPSVERIFY=0
 ```
 
+### Playbook 6: "Proxy Layer Mismatch — App Works Partially"
+
+This playbook addresses the scenario where an application's UI/login works but its API/backend features fail. This is common with multi-process apps (Electron + Go backend, VS Code + extensions, Docker Desktop).
+
+```
+1. Identify the symptom pattern
+   ├─ Login/auth works but features fail → proxy layer mismatch
+   ├─ "Auth succeeded" in logs but "Failed to fetch models/API" → OAuth via system proxy, API bypasses proxy
+   └─ Error contains "dial tcp [IPv6]:443: connectex:" → direct connection (no proxy)
+
+2. Check each proxy layer
+   │  Layer 1: System proxy (Windows IE/WinINET)
+   │  ├── reg query "HKCU\...\Internet Settings" /v ProxyEnable → 1 (enabled)?
+   │  ├── reg query "HKCU\...\Internet Settings" /v ProxyServer → has value?
+   │  └── This layer covers: Chromium renderer, .NET apps
+   │
+   │  Layer 2: Environment variables (user-level)
+   │  ├── powershell -Command "[System.Environment]::GetEnvironmentVariable('HTTP_PROXY', 'User')"
+   │  ├── powershell -Command "[System.Environment]::GetEnvironmentVariable('HTTPS_PROXY', 'User')"
+   │  └── This layer covers: Go net/http, curl, Python, Node.js
+   │
+   │  Layer 3: Proxy port listening
+   │  ├── netstat -ano | grep "<proxy_port>" | grep LISTENING
+   │  └── If port not listening → proxy app not running → start it first
+   │
+   │  Layer 4: TUN mode
+   │  ├── Check proxy app settings for TUN mode status
+   │  └── Karing: %APPDATA%\karing\karing\karing_setting.json → tun.enable
+   │  └── Clash Verge: %APPDATA%\io.github.clash-verge-rev...\profiles\*.yaml → tun.enable
+   │
+   │  Layer 5: Verify connectivity per layer
+   │  ├── curl --noproxy "*" https://blocked-site.com → fails (GFW)
+   │  ├── curl --proxy http://127.0.0.1:<port> https://blocked-site.com → works
+   │  └── If proxy works → env vars are the gap
+
+3. Apply resolution (choose by severity)
+   │
+   ├─ Option A: Enable TUN mode (BEST — universal)
+   │  ├── Open proxy app GUI → Settings → TUN → Enable
+   │  ├── Accept admin privilege prompt (UAC)
+   │  ├── Wait for virtual NIC creation
+   │  ├── Restart affected application
+   │  └── Verify: all features now work
+   │
+   ├─ Option B: Set user-level env vars (GOOD — covers most HTTP tools)
+   │  ├── powershell -Command "[System.Environment]::SetEnvironmentVariable('HTTP_PROXY', 'http://127.0.0.1:<port>', 'User')"
+   │  ├── powershell -Command "[System.Environment]::SetEnvironmentVariable('HTTPS_PROXY', 'http://127.0.0.1:<port>', 'User')"
+   │  ├── powershell -Command "[System.Environment]::SetEnvironmentVariable('ALL_PROXY', 'socks5://127.0.0.1:<port>', 'User')"
+   │  ├── powershell -Command "[System.Environment]::SetEnvironmentVariable('NO_PROXY', 'localhost,127.0.0.1', 'User')"
+   │  ├── FULLY close and restart the application (not just refresh)
+   │  └── Limitation: does NOT help gRPC or apps that ignore env vars
+   │
+   ├─ Option C: Proxy wrapper launcher (PARTIAL — per-app)
+   │  ├── Create VBS script that sets env vars then launches app
+   │  ├── Set WshShell.Environment("Process").Item("HTTP_PROXY")
+   │  └── WshShell.Run "app.exe --proxy-server=http://127.0.0.1:<port>"
+   │  └── Limitation: env vars still don't cover gRPC
+
+4. Verify fix
+   │  ├── Re-run the previously failing operation
+   │  ├── Check logs for "Auth succeeded" + successful API calls
+   │  ├── If still failing → upgrade to TUN mode (Option A)
+```
+
+**Key rule**: If Option B (env vars) doesn't fully fix the issue, always escalate to Option A (TUN mode). TUN is the only solution that covers gRPC, hardcoded connections, and all child processes.
+
 ---
 
 ## Platform-Specific Guides

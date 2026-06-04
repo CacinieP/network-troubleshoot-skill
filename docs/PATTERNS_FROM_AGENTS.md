@@ -104,7 +104,7 @@ The "can't push to GitHub" pattern:
 
 **Observed in**: cc-166, cc-154
 
-Pattern:
+Pattern flow:
 1. `docker pull` fails
 2. `docker info | grep -i mirror` shows no mirror
 3. Agent configures `/etc/docker/daemon.json` with China mirror
@@ -112,6 +112,37 @@ Pattern:
 5. Verify: `docker pull hello-world`
 
 **Key insight**: Docker daemon needs separate proxy/mirror configuration from the shell environment.
+
+## Pattern 9: Proxy Layer Mismatch (Application Internal)
+
+**Observed in**: Antigravity (Google Gemini IDE) troubleshooting, 2026-06-04
+
+Pattern flow:
+1. Application login/UI works fine (uses Chromium/system proxy)
+2. Application backend/API calls fail (Go binary doesn't use system proxy)
+3. Error logs show `context deadline exceeded` and `dial tcp [IPv6]:443: connectex: A connection attempt failed`
+4. Setting HTTP_PROXY env vars in shell doesn't help — Electron spawns child process that doesn't inherit env vars from the bash parent
+5. Even setting user-level env vars and restarting doesn't help for gRPC connections — Go's gRPC library bypasses HTTP_PROXY
+6. `--proxy-server` Electron flag only affects Chromium renderer, not spawned child processes
+7. Final resolution: Enable TUN mode in Karing proxy app → virtual NIC routes ALL traffic at IP layer
+
+**Key insight**: Multi-process applications (Electron + native backend) can have different proxy coverage per component. The ONLY universal solution is TUN mode. Env vars and `--proxy-server` flags are partial solutions that only cover specific layers.
+
+**Diagnostic heuristics**:
+- If app login works but features don't → proxy layer mismatch
+- If error shows `dial tcp [IPv6]:443: connectex:` → direct connection blocked (no proxy for this component)
+- If error shows `Post "https://...": context deadline exceeded` → HTTP/gRPC not going through proxy
+- If `EOF` on HTTPS → proxy interference at TLS layer
+- If `Auth succeeded` but `Failed to poll FetchAvailableModels` → OAuth token obtained via system proxy, API calls bypassing proxy
+
+**Proxy layer coverage hierarchy** (ordered by completeness):
+
+| Layer | Coverage | Limitation |
+|-------|----------|------------|
+| System proxy (WinINET) | Chromium, .NET, IE/Edge | Go/Rust binaries, Python, Node.js without env vars |
+| HTTP_PROXY env vars | curl, Go net/http, Python urllib, Node.js | Electron children, gRPC, apps ignoring env vars |
+| Electron --proxy-server | Chromium renderer only | All child processes excluded |
+| TUN mode (virtual NIC) | Everything | Requires admin + compatible proxy app |
 
 ## Summary of Diagnostic Patterns
 

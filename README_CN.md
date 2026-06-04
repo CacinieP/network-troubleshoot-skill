@@ -197,6 +197,8 @@ cp adapters/generic/network-troubleshoot.md .
 - npm/pip/docker 镜像源配置
 - GFW 相关连通性问题
 - 中文触发词支持（网络问题、连不上、无法访问、代理、超时）
+- 代理层级不匹配检测（Electron+Go、Docker Desktop、VS Code+扩展等多进程应用的部分联网问题）
+- TUN 模式诊断与切换建议
 
 ### 常见修复速查
 

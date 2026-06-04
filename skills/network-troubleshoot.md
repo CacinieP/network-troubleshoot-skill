@@ -1,6 +1,6 @@
 ---
 name: network-troubleshoot
-description: Systematic network troubleshooting for developers. Diagnoses connectivity, DNS, proxy, SSL/TLS, HTTP, firewall, and package manager issues with automated diagnostic commands and resolution steps.
+description: Systematic network troubleshooting for developers. Diagnoses connectivity, DNS, proxy, SSL/TLS, HTTP, firewall, and package manager issues with automated diagnostic commands and resolution steps. Includes proxy layer mismatch detection for multi-process apps (Electron+Go, Docker Desktop, VS Code+extensions).
 triggers:
   - network
   - connect
@@ -22,6 +22,12 @@ triggers:
   - 无法访问
   - 代理
   - 超时
+  - mismatch
+  - layer
+  - TUN
+  - gRPC
+  - 语言服务器
+  - context deadline exceeded
 ---
 
 # Network Troubleshoot Skill
@@ -140,7 +146,84 @@ pip config get global.proxy                 # pip proxy
 # Windows system proxy
 reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable
 reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer
+
+# User-level env vars (persist across reboots — this is what child processes inherit)
+powershell -Command "[System.Environment]::GetEnvironmentVariable('HTTP_PROXY', 'User')"
+powershell -Command "[System.Environment]::GetEnvironmentVariable('HTTPS_PROXY', 'User')"
 ```
+
+### 3H: Proxy Layer Mismatch Detection (Application-Level Proxy Audit)
+
+When one part of an application works (e.g., login/UI) but another fails (e.g., API calls/backend), the root cause may be **different proxy layers within the same application**. This is especially common in multi-process apps (Electron + Go/Rust backend, Docker Desktop, VS Code + extensions).
+
+**Proxy layers and their coverage:**
+
+| Layer | Mechanism | Covers | Misses |
+|-------|-----------|--------|--------|
+| System proxy (IE/WinINET) | Registry `HKCU\...\Internet Settings` | Chromium, .NET, Edge, IE | Go/Rust binaries, Python stdlib (unless env vars), Node.js (unless env vars) |
+| Environment variables | `HTTP_PROXY`/`HTTPS_PROXY`/`ALL_PROXY` | curl, wget, Go net/http, Python urllib/requests | Electron child processes (may not inherit), gRPC clients, apps ignoring env vars |
+| Electron `--proxy-server` | Chromium flag | Electron renderer, webview | Spawned child processes (language_server.exe, etc.) |
+| TUN mode (virtual NIC) | OS-level routing via virtual adapter | **ALL** applications, **ALL** protocols | Nothing — universal solution |
+
+**Diagnostic commands for layer mismatch:**
+
+```bash
+# Step 1: Verify system proxy is set (Windows)
+reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable
+reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer
+
+# Step 2: Check user-level env vars (these persist across sessions)
+powershell -Command "[System.Environment]::GetEnvironmentVariable('HTTP_PROXY', 'User')"
+powershell -Command "[System.Environment]::GetEnvironmentVariable('HTTPS_PROXY', 'User')"
+
+# Step 3: Check process-level env vars (current session only)
+echo $HTTP_PROXY $HTTPS_PROXY
+
+# Step 4: Test connectivity per layer
+curl -sS --noproxy "*" --connect-timeout 5 https://blocked-site.com     # Direct (no proxy)
+curl -sS --proxy http://127.0.0.1:<port> --connect-timeout 5 https://blocked-site.com  # Via proxy
+
+# Step 5: Check if proxy port is actually listening
+netstat -ano | grep "<port>" | grep LISTENING
+
+# Step 6: Identify Electron child processes (if applicable)
+powershell -Command "Get-WmiObject Win32_Process -Filter \"Name='language_server.exe'\" | Select CommandLine"
+# Note: Cannot read another process's env block on Windows
+```
+
+**Error patterns indicating proxy layer mismatch:**
+
+| Error Pattern | Meaning | Likely Layer Issue |
+|---------------|---------|--------------------|
+| `dial tcp [IPv6]:443: connectex: A connection attempt failed` | Direct connection blocked (GFW/firewall) | No proxy at all for this component |
+| `Post "https://...": context deadline exceeded` | HTTP/gRPC timeout | HTTP/gRPC not going through proxy |
+| `EOF` on HTTPS connections | Connection dropped mid-TLS | Proxy interference or TLS layer issue |
+| App login works but features/API fail | Selective connectivity | System proxy works for Chromium, env vars missing for backend |
+| Auth succeeded but model listing fails | OAuth token obtained, API blocked | OAuth uses system proxy, API calls need env vars |
+
+**Resolution strategies (ordered by effectiveness):**
+
+1. **Enable TUN mode** (universal, best solution):
+   In your proxy app (Karing/Clash Verge/Surge), enable TUN mode. This creates a virtual NIC that routes ALL traffic at the IP layer, regardless of application proxy support. Requires admin privileges. After enabling, restart the affected application.
+
+2. **Set user-level environment variables** (partial solution):
+   ```powershell
+   [System.Environment]::SetEnvironmentVariable('HTTP_PROXY', 'http://127.0.0.1:<port>', 'User')
+   [System.Environment]::SetEnvironmentVariable('HTTPS_PROXY', 'http://127.0.0.1:<port>', 'User')
+   [System.Environment]::SetEnvironmentVariable('ALL_PROXY', 'socks5://127.0.0.1:<port>', 'User')
+   [System.Environment]::SetEnvironmentVariable('NO_PROXY', 'localhost,127.0.0.1', 'User')
+   ```
+   Then **restart the application** (not just refresh — full close and reopen). Limitation: env vars only work for apps that read them; they do NOT help gRPC or apps that hardcode connections.
+
+3. **Launch app with proxy wrapper** (partial, per-app solution):
+   Create a VBS/bat launcher that sets env vars before launching the target app. This ensures the process tree inherits proxy settings from the start:
+   ```vbs
+   Set WshShell = CreateObject("WScript.Shell")
+   WshShell.Environment("Process").Item("HTTP_PROXY") = "http://127.0.0.1:<port>"
+   WshShell.Environment("Process").Item("HTTPS_PROXY") = "http://127.0.0.1:<port>"
+   WshShell.Run "app.exe --proxy-server=http://127.0.0.1:<port>"
+   ```
+   Limitation: Only works for HTTP calls from Go net/http etc.; gRPC still bypasses.
 
 ### 3D: SSL/TLS Diagnostics
 
@@ -232,6 +315,9 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 | DNS fails entirely | DNS server down | Switch to `8.8.8.8` or `1.1.1.1`, check `/etc/resolv.conf` |
 | Proxy port not listening | Proxy app not running | Start Clash/V2Ray/SSR, check auto-start config |
 | Proxy works but target blocked | GFW / network policy | Use different proxy node, try different protocol |
+| App login works but features fail | Proxy layer mismatch | Set env vars, enable TUN mode, or use proxy wrapper launcher |
+| `dial tcp [IPv6]:443: connectex: failed` | Direct connection blocked | Enable TUN mode (universal) or set HTTP_PROXY env vars |
+| `context deadline exceeded` on HTTPS | HTTP/gRPC bypassing proxy | Enable TUN mode (covers gRPC); env vars only cover HTTP |
 | SSL cert expired | Server misconfiguration | Contact server admin, temporary: `NODE_TLS_REJECT_UNAUTHORIZED=0` (dev only!) |
 | SSL self-signed | Internal CA | Add CA to trust store: `npm config set strict-ssl false` or import cert |
 | HTTP 407 | Proxy auth required | Configure proxy credentials in env or tool config |

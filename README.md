@@ -219,6 +219,8 @@ Built from real Chinese developer agent sessions with specific patterns:
 - npm/pip/docker registry mirror configuration
 - GFW-related connectivity patterns
 - Chinese language triggers (网络问题, 连不上, 无法访问, 代理, 超时)
+- Proxy layer mismatch detection (Electron+Go, Docker Desktop, VS Code+extensions)
+- TUN mode diagnosis and resolution guidance
 
 ## Repository Structure
 
@@ -286,7 +288,7 @@ network-troubleshoot-skill/
 ## Data Sources
 
 1. **112+ coding agent interaction sessions** — Claude Code (577), KimiCode (25), Codex (11), Cursor (3)
-2. **8 network troubleshooting patterns** extracted from real-world developer workflows
+2. **9 network troubleshooting patterns** extracted from real-world developer workflows
 3. **China-specific network scenarios** — proxy cascade, GFW patterns, registry mirrors
 4. **Industry best practices** — curl, openssl, dig diagnostic references
 

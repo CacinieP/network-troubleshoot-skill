@@ -114,6 +114,9 @@ switch ($Agent.ToLower()) {
         New-Item -ItemType Directory -Path ".amazonq\rules" -Force | Out-Null
         Download "adapters/amazon-q/.amazonq/rules/network-troubleshoot.md" ".amazonq\rules\network-troubleshoot.md"
     }
+    "hermes" {
+        Download "adapters/hermes/network-troubleshoot.md" "network-troubleshoot.md"
+    }
     "generic" {
         Download "adapters/generic/network-troubleshoot.md" "network-troubleshoot.md"
     }

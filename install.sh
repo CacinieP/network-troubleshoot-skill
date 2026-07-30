@@ -113,6 +113,11 @@ install_amazon_q() {
   info "Installed to .amazonq/rules/network-troubleshoot.md"
 }
 
+install_hermes() {
+  download "adapters/hermes/network-troubleshoot.md" "network-troubleshoot.md"
+  info "Installed to network-troubleshoot.md"
+}
+
 install_generic() {
   download "adapters/generic/network-troubleshoot.md" "network-troubleshoot.md"
   info "Installed to network-troubleshoot.md"
@@ -133,6 +138,7 @@ Available agents:
   trae          Trae IDE (ByteDance)
   codebuddy     CodeBuddy (Tencent)
   opencode      OpenCode
+  hermes        Hermes
   augment       Augment Code
   gemini        Gemini CLI
   cody          Sourcegraph Cody
@@ -178,6 +184,7 @@ case "$AGENT" in
   gemini)               install_gemini ;;
   cody)                 install_cody ;;
   amazon-q|amazonq)     install_amazon_q ;;
+  hermes)               install_hermes ;;
   generic|other)        install_generic ;;
   list|--list|-l)       list_agents ;;
   *)

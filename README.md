@@ -90,13 +90,8 @@ When network errors occur, this skill guides your AI coding agent through a stru
 # One command — replace <agent> with your tool name
 curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- <agent>
 
-# Examples:
-curl -fsSL ... | bash -s -- cursor       # Cursor
-curl -fsSL ... | bash -s -- claude-code  # Claude Code
-curl -fsSL ... | bash -s -- copilot      # GitHub Copilot
-curl -fsSL ... | bash -s -- cline        # Cline
-curl -fsSL ... | bash -s -- windsurf     # Windsurf
-curl -fsSL ... | bash -s -- generic      # Any other agent
+# Example: install for Cursor
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- cursor
 ```
 
 <details>
@@ -222,6 +217,29 @@ Built from real Chinese developer agent sessions with specific patterns:
 - Proxy layer mismatch detection (Electron+Go, Docker Desktop, VS Code+extensions)
 - TUN mode diagnosis and resolution guidance
 
+### Common Fixes Quick Reference
+
+| Scenario | Command |
+|----------|---------|
+| npm timeout | `npm config set registry https://registry.npmmirror.com` |
+| pip timeout | `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple` |
+| Git failure | `git config --global http.proxy http://127.0.0.1:7890` |
+| Docker pull failure | Configure a registry mirror in `/etc/docker/daemon.json` |
+| DNS failure | Switch to 8.8.8.8 and flush the DNS cache |
+| Proxy not running | Start Clash/V2Ray and verify the listening port |
+| Expired SSL certificate | Update the certificate; development only: `NODE_TLS_REJECT_UNAUTHORIZED=0` |
+
+### One-Click Proxy Setup (China Developers)
+
+```bash
+export HTTP_PROXY=http://127.0.0.1:7890
+export HTTPS_PROXY=http://127.0.0.1:7890
+export ALL_PROXY=socks5://127.0.0.1:7891
+npm config set registry https://registry.npmmirror.com
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+git config --global http.proxy http://127.0.0.1:7890
+```
+
 ## Repository Structure
 
 ```
@@ -250,6 +268,7 @@ network-troubleshoot-skill/
 │   ├── TROUBLESHOOTING_GUIDE.md           # Full reference guide
 │   └── PATTERNS_FROM_AGENTS.md            # Data-driven pattern analysis
 ├── install.sh                             # One-click installer
+├── install.ps1                            # PowerShell installer
 ├── CONTRIBUTING.md                        # How to contribute
 ├── LICENSE
 ├── README.md

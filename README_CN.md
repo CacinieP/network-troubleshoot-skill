@@ -86,18 +86,13 @@ irm https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/i
 
 ## 快速开始
 
-**macOS / Linux / Windows Git Bash:**
 ```bash
+# 一条命令即可安装——将 <agent> 替换为你的工具名称
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- <agent>
+
+# 示例：为 Cursor 安装
 curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- cursor
 ```
-
-**Windows PowerShell:**
-```powershell
-irm https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.ps1 | iex
-# 然后输入: cursor
-```
-
-支持：`cursor`、`claude-code`、`copilot`、`windsurf`、`cline`、`codex`、`continue`、`aider`、`kiro`、`trae`、`codebuddy`、`opencode`、`augment`、`gemini`、`cody`、`amazon-q`、`generic`
 
 <details>
 <summary>手动安装（复制单个文件）</summary>
@@ -272,6 +267,9 @@ network-troubleshoot-skill/
 ├── docs/
 │   ├── TROUBLESHOOTING_GUIDE.md           # 完整故障排查参考指南
 │   └── PATTERNS_FROM_AGENTS.md            # 基于代理交互的模式分析
+├── install.sh                             # 一键安装脚本
+├── install.ps1                            # PowerShell 安装脚本
+├── CONTRIBUTING.md                        # 贡献指南
 ├── LICENSE
 ├── README.md                              # 英文文档
 └── README_CN.md                           # 中文文档（本文件）

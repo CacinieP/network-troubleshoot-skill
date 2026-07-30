@@ -9,6 +9,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/stars/CacinieP/network-troubleshoot-skill?style=social" alt="GitHub stars">
+  <img src="https://img.shields.io/github/actions/workflow/status/CacinieP/network-troubleshoot-skill/ci.yml?branch=main&style=flat-square" alt="CI">
   <img src="https://img.shields.io/badge/agents-17%2B-blue" alt="17+ agents">
   <img src="https://img.shields.io/badge/sessions-112%2B-green" alt="112+ sessions">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="MIT License">
@@ -28,6 +29,27 @@
 > 支持 Claude Code、Cursor、GitHub Copilot、Windsurf、Cline、Codex、Continue、Aider、Kiro、Trae、CodeBuddy、OpenCode、Augment、Gemini、Cody、Amazon Q 等等。
 
 ---
+
+## 一键安装
+
+**macOS / Linux / Windows Git Bash：**
+```bash
+curl -fsSL https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.sh | bash -s -- cursor
+```
+
+**Windows PowerShell：**
+```powershell
+irm https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/install.ps1 | iex
+# 然后输入：cursor
+```
+
+支持：`cursor`、`claude-code`、`copilot`、`windsurf`、`cline`、`codex`、`continue`、`aider`、`kiro`、`trae`、`codebuddy`、`opencode`、`augment`、`gemini`、`cody`、`amazon-q`、`generic`
+
+## 为什么使用它
+
+大多数 AI 代理规则仓库都是通用提示词合集，而本项目专门处理会阻塞真实开发工作的网络故障：DNS 解析失败、代理/VPN 连锁问题、SSL 错误、镜像源超时、包管理器失败、Docker 拉取失败、Git 获取失败，以及 HTTP 4xx/5xx 错误。
+
+目标很简单：当代理发现网络错误时，它应该收集正确的诊断信息、对症状进行分类、判断最可能的根因、应用可逆的修复方案，并重新运行原始命令验证结果。
 
 ## 它能做什么
 
@@ -62,7 +84,7 @@
 
 > **其他代理？** 使用 [`adapters/generic/network-troubleshoot.md`](adapters/generic/network-troubleshoot.md) — 纯 Markdown，适用于任何代理。
 
-## 快速安装
+## 快速开始
 
 **macOS / Linux / Windows Git Bash:**
 ```bash
@@ -287,7 +309,7 @@ network-troubleshoot-skill/
 ## 数据来源
 
 1. **112+ 编程代理交互会话** — Claude Code（577）、KimiCode（25）、Codex（11）、Cursor（3）
-2. **8 个网络排查模式** — 从真实开发者工作流中提取
+2. **9 个网络排查模式** — 从真实开发者工作流中提取
 3. **中国特定网络场景** — 代理级联、GFW 模式、镜像源配置
 4. **行业最佳实践** — curl、openssl、dig 等诊断工具参考
 

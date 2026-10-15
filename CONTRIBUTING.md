@@ -73,7 +73,8 @@ alwaysApply: true
 
 - [ ] Adapter uses the correct file format and path for the target agent
 - [ ] Both README.md and README_CN.md are updated
-- [ ] Content is consistent with the primary skill in `skills/network-troubleshoot.md`
+- [ ] Content is consistent with the primary skill in `skills/network-troubleshoot/SKILL.md`
+- [ ] `bash scripts/check-adapters.sh` passes (CI runs it; it verifies every adapter is dispatched by both installers)
 
 ## Questions?
 

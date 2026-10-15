@@ -1,33 +1,6 @@
 ---
 name: network-troubleshoot
 description: Systematic network troubleshooting for developers. Diagnoses connectivity, DNS, proxy, SSL/TLS, HTTP, firewall, and package manager issues with automated diagnostic commands and resolution steps. Includes proxy layer mismatch detection for multi-process apps (Electron+Go, Docker Desktop, VS Code+extensions).
-triggers:
-  - network
-  - connect
-  - DNS
-  - proxy
-  - timeout
-  - ECONNREFUSED
-  - ECONNRESET
-  - ETIMEDOUT
-  - SSL
-  - TLS
-  - certificate
-  - firewall
-  - CORS
-  - ping
-  - curl
-  - 网络问题
-  - 连不上
-  - 无法访问
-  - 代理
-  - 超时
-  - mismatch
-  - layer
-  - TUN
-  - gRPC
-  - 语言服务器
-  - context deadline exceeded
 ---
 
 # Network Troubleshoot Skill

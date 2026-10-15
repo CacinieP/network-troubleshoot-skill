@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -f skills/network-troubleshoot.md
+          test -f skills/network-troubleshoot/SKILL.md
           test -f adapters/cursor/network-troubleshoot.mdc
           test -f adapters/github-copilot/copilot-instructions.md
           test -f adapters/codex/network-troubleshoot.md

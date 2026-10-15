@@ -236,11 +236,13 @@ dig +stats example.com | grep "Query time"
    │        Try: openssl s_client -connect host:443 -tls1_2
    │        Check server TLS configuration
 
-   Quick fixes (dev only):
+   Last-resort quick fixes (development only — require explicit user approval):
    - Node.js: NODE_TLS_REJECT_UNAUTHORIZED=0
    - npm: npm config set strict-ssl false
    - git: git config --global http.sslVerify false
    - Python: export PYTHONHTTPSVERIFY=0
+   Always prefer fixing the root cause first: import the CA, update the
+   trust store, or fix the system clock.
 ```
 
 ### Playbook 6: "Proxy Layer Mismatch — App Works Partially"
@@ -389,7 +391,7 @@ npm config set proxy http://127.0.0.1:7890
 npm config set https-proxy http://127.0.0.1:7890
 
 # SSL
-npm config set strict-ssl false  # Dev only!
+npm config set strict-ssl false  # Last resort, dev only — requires explicit user approval
 
 # Cache
 npm cache clean --force
@@ -409,7 +411,7 @@ pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn
 pip config set global.proxy http://127.0.0.1:7890
 
 # SSL
-pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org package
+pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org package  # Scoped trust exception — dev only, with user approval
 ```
 
 ### Git
@@ -424,7 +426,7 @@ git config --global --unset http.proxy
 git config --global --unset https.proxy
 
 # SSL
-git config --global http.sslVerify false  # Dev only!
+git config --global http.sslVerify false  # Last resort, dev only — requires explicit user approval
 git config --global http.sslCAInfo /path/to/ca.crt
 
 # Debug

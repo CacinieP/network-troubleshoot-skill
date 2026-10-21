@@ -22,10 +22,10 @@ download() {
 }
 
 install_claude_code() {
-  local dest="$HOME/.claude/skills"
+  local dest="$HOME/.claude/skills/network-troubleshoot"
   mkdir -p "$dest"
-  download "skills/network-troubleshoot.md" "$dest/network-troubleshoot.md"
-  info "Installed to $dest/network-troubleshoot.md"
+  download "skills/network-troubleshoot/SKILL.md" "$dest/SKILL.md"
+  info "Installed to $dest/SKILL.md"
   info "Restart Claude Code to activate."
 }
 

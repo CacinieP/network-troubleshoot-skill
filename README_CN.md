@@ -64,7 +64,7 @@ irm https://raw.githubusercontent.com/CacinieP/network-troubleshoot-skill/main/i
 
 | 代理 | 配置文件 | 格式 |
 |-----|---------|------|
-| **Claude Code** | `~/.claude/skills/network-troubleshoot.md` | YAML frontmatter + Markdown |
+| **Claude Code** | `~/.claude/skills/network-troubleshoot/SKILL.md` | YAML frontmatter + Markdown |
 | **Cursor** | `.cursor/rules/network-troubleshoot.mdc` | MDC 格式 |
 | **GitHub Copilot** | `.github/copilot-instructions.md` | 纯 Markdown |
 | **Windsurf** | `.windsurfrules` | 纯 Markdown |
@@ -102,7 +102,7 @@ git clone https://github.com/CacinieP/network-troubleshoot-skill.git
 cd network-troubleshoot-skill
 
 # Claude Code
-cp skills/network-troubleshoot.md ~/.claude/skills/
+mkdir -p ~/.claude/skills/network-troubleshoot && cp skills/network-troubleshoot/SKILL.md ~/.claude/skills/network-troubleshoot/
 
 # Cursor
 cp adapters/cursor/network-troubleshoot.mdc .cursor/rules/
@@ -245,7 +245,8 @@ git config --global http.proxy http://127.0.0.1:7890
 ```
 network-troubleshoot-skill/
 ├── skills/
-│   └── network-troubleshoot.md            # Claude Code 技能定义（主文件）
+│   └── network-troubleshoot/
+│       └── SKILL.md                       # Claude Code 技能定义（主文件）
 ├── adapters/
 │   ├── generic/                           # 通用 Markdown 适配器
 │   ├── cursor/                            # Cursor .mdc 格式

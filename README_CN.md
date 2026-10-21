@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/github/stars/CacinieP/network-troubleshoot-skill?style=social" alt="GitHub stars">
   <img src="https://img.shields.io/github/actions/workflow/status/CacinieP/network-troubleshoot-skill/ci.yml?branch=main&style=flat-square" alt="CI">
   <img src="https://img.shields.io/badge/agents-17%2B-blue" alt="17+ agents">
-  <img src="https://img.shields.io/badge/sessions-112%2B-green" alt="112+ sessions">
+  <img src="https://img.shields.io/badge/sessions-616-green" alt="616 agent sessions">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="MIT License">
   <img src="https://img.shields.io/badge/platform-Win%20%7C%20Mac%20%7C%20Linux-lightgrey" alt="Platform">
 </p>
@@ -211,7 +211,7 @@ cp adapters/generic/network-troubleshoot.md .
 基于真实的中国开发者代理交互会话，特别针对以下场景：
 
 - 代理/VPN 级联诊断（Clash、V2Ray、SSR）
-- npm/pip/docker 镜像源配置
+- npm/pip 镜像源配置，Docker 走代理拉取
 - GFW 相关连通性问题
 - 中文触发词支持（网络问题、连不上、无法访问、代理、超时）
 - 代理层级不匹配检测（Electron+Go、Docker Desktop、VS Code+扩展等多进程应用的部分联网问题）
@@ -224,7 +224,7 @@ cp adapters/generic/network-troubleshoot.md .
 | npm 超时 | `npm config set registry https://registry.npmmirror.com` |
 | pip 超时 | `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple` |
 | git 失败 | `git config --global http.proxy http://127.0.0.1:7890` |
-| docker pull 失败 | 配置 `/etc/docker/daemon.json` 镜像源 |
+| docker pull 失败 | 在 `/etc/docker/daemon.json` 配置 `proxies` 或开启 TUN 模式（国内公共镜像已于 2024 年基本关停） |
 | DNS 失败 | 切换到 8.8.8.8，刷新 DNS 缓存 |
 | 代理未运行 | 启动 Clash/V2Ray，验证端口监听 |
 | SSL 证书过期 | 更新证书；开发环境：`NODE_TLS_REJECT_UNAUTHORIZED=0` |
@@ -283,7 +283,7 @@ network-troubleshoot-skill/
 | Stars | 新项目 | ~39,600 | ~183 | ~211 | ~511 |
 | 聚焦网络排查 | **是（核心）** | 否 | 否 | 否 | 是（核心） |
 | 多代理支持 | **17+** | 1（Cursor） | 3 | 4+ | 1（Claude） |
-| 数据驱动模式 | **112+ 会话** | 否 | 否 | 否 | 否 |
+| 数据驱动模式 | **616 会话（38 个与网络相关）** | 否 | 否 | 否 | 否 |
 | 中国/GFW 场景 | **是** | 否 | 否 | 否 | 否 |
 | 修复方案手册 | **12+ 方案** | 不适用 | 不适用 | 不适用 | 112 技能 |
 | 跨平台（Win/Mac/Linux） | **全部** | 不适用 | 不适用 | 不适用 | Linux |
@@ -293,21 +293,9 @@ network-troubleshoot-skill/
 
 > **核心差异**：这是唯一一个同时具备 (1) 17+ 代理多平台支持、(2) 真实会话数据驱动、(3) 中国/GFW 特定场景、(4) 零配置即装即用 的网络排查技能。[NetClaw](https://github.com/automateyournetwork/netclaw) 面向企业网络工程师（BGP/OSPF/EVPN），而本项目面向**开发者**日常工作中遇到的网络错误。
 
-### 竞争力评分
-
-| 指标 | 得分 | 说明 |
-|------|------|------|
-| 独特性 | **9/10** | 唯一一个多代理网络排查 + 真实会话数据驱动的仓库 |
-| 完整度 | **8.5/10** | 17 个代理、中英双语文档、修复手册、参考指南 |
-| 实用性 | **9/10** | 复制即用、零配置、即刻产生价值 |
-| 数据支撑 | **9/10** | 112+ 真实会话提取，非手工编写 |
-| 文档质量 | **8.5/10** | 中英双语、参考指南、模式分析、对比表格 |
-| 社区潜力 | **7/10** | 垂直领域但高价值；需更多曝光和贡献者引导 |
-| **综合** | **8.5/10** | 开发者网络排查 x AI 代理领域最佳 |
-
 ## 数据来源
 
-1. **112+ 编程代理交互会话** — Claude Code（577）、KimiCode（25）、Codex（11）、Cursor（3）
+1. **616 个编程代理交互会话，其中 38 个与网络相关** — Claude Code（577 / 34）、KimiCode（25 / 3）、Codex（11 / 1）、Cursor（3 / 0）
 2. **9 个网络排查模式** — 从真实开发者工作流中提取
 3. **中国特定网络场景** — 代理级联、GFW 模式、镜像源配置
 4. **行业最佳实践** — curl、openssl、dig 等诊断工具参考

@@ -214,9 +214,12 @@ dig +stats example.com | grep "Query time"
 1. docker pull hello-world
    FAIL --> Docker daemon or registry issue
    │        Check: systemctl status docker (Linux)
-   │        Check: docker info | grep -i mirror
-   │        Configure mirror in /etc/docker/daemon.json
-   │        China mirror: https://mirror.ccs.tencentyun.com
+   │        Check: docker info | grep -i "proxy\|mirror"
+   │        Fix (preferred): set "proxies" in /etc/docker/daemon.json,
+   │              restart the daemon; or enable TUN mode
+   │        Public China registry mirrors were largely shut down or
+   │        restricted to provider intranets in 2024 — only use a mirror
+   │        documented by your own cloud provider
    │
    SUCCESS --> Image-specific issue
             Check image name and tag
@@ -436,18 +439,17 @@ GIT_CURL_VERBOSE=1 GIT_TRACE=1 git ls-remote
 ### Docker
 
 ```json
-// /etc/docker/daemon.json
+// /etc/docker/daemon.json — proxy-based pulling (Docker Engine 23+)
 {
-  "registry-mirrors": [
-    "https://mirror.ccs.tencentyun.com",
-    "https://docker.mirrors.ustc.edu.cn"
-  ],
   "proxies": {
     "http-proxy": "http://127.0.0.1:7890",
-    "https-proxy": "http://127.0.0.1:7890"
+    "https-proxy": "http://127.0.0.1:7890",
+    "no-proxy": "localhost,127.0.0.0/8"
   }
 }
 ```
+
+Restart the daemon after editing (`sudo systemctl restart docker`, or restart Docker Desktop). Public China registry mirrors (USTC, NetEase, Aliyun public, DaoCloud, Tencent outside Tencent Cloud) were shut down or restricted in 2024; add `"registry-mirrors"` only for a mirror your own cloud provider documents for your host.
 
 ### Gradle
 

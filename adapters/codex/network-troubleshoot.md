@@ -58,7 +58,7 @@ Pick commands based on classification:
 | npm timeout | `npm config set registry https://registry.npmmirror.com` |
 | pip timeout | `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple` |
 | git fails | `git config --global http.proxy http://127.0.0.1:7890` |
-| docker pull fails | Add mirror to `/etc/docker/daemon.json` |
+| docker pull fails | Set `proxies` in `/etc/docker/daemon.json` or enable TUN mode; use a registry mirror only if your cloud provider documents one |
 
 ### 5. Verify
 

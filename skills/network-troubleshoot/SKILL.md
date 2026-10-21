@@ -1,38 +1,21 @@
 ---
 name: network-troubleshoot
 description: Systematic network troubleshooting for developers. Diagnoses connectivity, DNS, proxy, SSL/TLS, HTTP, firewall, and package manager issues with automated diagnostic commands and resolution steps. Includes proxy layer mismatch detection for multi-process apps (Electron+Go, Docker Desktop, VS Code+extensions).
-triggers:
-  - network
-  - connect
-  - DNS
-  - proxy
-  - timeout
-  - ECONNREFUSED
-  - ECONNRESET
-  - ETIMEDOUT
-  - SSL
-  - TLS
-  - certificate
-  - firewall
-  - CORS
-  - ping
-  - curl
-  - 网络问题
-  - 连不上
-  - 无法访问
-  - 代理
-  - 超时
-  - mismatch
-  - layer
-  - TUN
-  - gRPC
-  - 语言服务器
-  - context deadline exceeded
 ---
 
 # Network Troubleshoot Skill
 
 You are a network diagnostics expert. When invoked, systematically diagnose and resolve network issues using the workflow below.
+
+## Safety Boundaries
+
+Follow these rules strictly at all times:
+
+- **Read-only first.** Prefer diagnostics that do not change state. Use the failing host, URL, registry, or service as the default probe target; ask before probing unrelated external services.
+- **Never print secrets.** Do not print proxy URLs, credentials, tokens, auth headers, package index URLs, registry hostnames, internal hosts, or raw config values from npm, pnpm, yarn, pip, Git, Docker, shell, OS proxy, VPN, or certificate stores. Report only whether relevant settings appear present, without values.
+- **Never bypass TLS on your own initiative.** Do not set `NODE_TLS_REJECT_UNAUTHORIZED=0`, `npm config set strict-ssl false`, `git config --global http.sslVerify false`, or `PYTHONHTTPSVERIFY=0` without explicit user approval. If a bypass seems necessary, present it as a last-resort, development-only option and wait for approval.
+- **No unapproved state changes.** Do not change OS networking, DNS, proxy, package manager, Git, Docker, shell, VPN, or trust-store settings without explicit user approval for the exact action.
+- **Explain before fixing.** Present findings clearly before suggesting fixes; remediation options are choices for the user, not automatic actions.
 
 ## Step 1: Collect Symptom Information
 
@@ -318,8 +301,8 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 | App login works but features fail | Proxy layer mismatch | Set env vars, enable TUN mode, or use proxy wrapper launcher |
 | `dial tcp [IPv6]:443: connectex: failed` | Direct connection blocked | Enable TUN mode (universal) or set HTTP_PROXY env vars |
 | `context deadline exceeded` on HTTPS | HTTP/gRPC bypassing proxy | Enable TUN mode (covers gRPC); env vars only cover HTTP |
-| SSL cert expired | Server misconfiguration | Contact server admin, temporary: `NODE_TLS_REJECT_UNAUTHORIZED=0` (dev only!) |
-| SSL self-signed | Internal CA | Add CA to trust store: `npm config set strict-ssl false` or import cert |
+| SSL cert expired | Server misconfiguration | Contact server admin; last-resort dev-only bypass (e.g. `NODE_TLS_REJECT_UNAUTHORIZED=0`) only with explicit user approval |
+| SSL self-signed | Internal CA | Import the CA into the trust store (preferred); `npm config set strict-ssl false` only as a dev-only last resort with user approval |
 | HTTP 407 | Proxy auth required | Configure proxy credentials in env or tool config |
 | HTTP 403 | IP blocked / auth required | Check API key, verify IP whitelist, try different network |
 | HTTP 502/503/504 | Server/CDN issue | Check server status page, retry with exponential backoff |

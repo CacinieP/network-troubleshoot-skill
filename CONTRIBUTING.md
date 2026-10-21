@@ -15,7 +15,7 @@ Each agent lives in `adapters/<agent-name>/`. To add a new one:
 
 ### Add a New Error Pattern
 
-Edit `skills/network-troubleshoot.md` (the primary skill file):
+Edit `skills/network-troubleshoot/SKILL.md` (the primary skill file):
 
 1. Add the error to the classification table
 2. Add the diagnostic command if it's a new category

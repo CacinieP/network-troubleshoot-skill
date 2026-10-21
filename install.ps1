@@ -55,9 +55,9 @@ if (-not $Agent) {
 
 switch ($Agent.ToLower()) {
     "claude-code" {
-        $dest = "$env:USERPROFILE\.claude\skills"
+        $dest = "$env:USERPROFILE\.claude\skills\network-troubleshoot"
         New-Item -ItemType Directory -Path $dest -Force | Out-Null
-        Download "skills/network-troubleshoot.md" "$dest\network-troubleshoot.md"
+        Download "skills/network-troubleshoot/SKILL.md" "$dest\SKILL.md"
         Write-Host "Restart Claude Code to activate." -ForegroundColor Yellow
     }
     "cursor" {

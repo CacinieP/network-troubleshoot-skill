@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/github/stars/CacinieP/network-troubleshoot-skill?style=social" alt="GitHub stars">
   <img src="https://img.shields.io/github/actions/workflow/status/CacinieP/network-troubleshoot-skill/ci.yml?branch=main&style=flat-square" alt="CI">
   <img src="https://img.shields.io/badge/agents-17%2B-blue" alt="17+ agents">
-  <img src="https://img.shields.io/badge/sessions-112%2B-green" alt="112+ sessions">
+  <img src="https://img.shields.io/badge/sessions-616-green" alt="616 agent sessions">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="MIT License">
   <img src="https://img.shields.io/badge/platform-Win%20%7C%20Mac%20%7C%20Linux-lightgrey" alt="Platform">
 </p>
@@ -211,7 +211,7 @@ Network Error
 Built from real Chinese developer agent sessions with specific patterns:
 
 - Proxy/VPN cascade diagnosis (Clash, V2Ray, SSR)
-- npm/pip/docker registry mirror configuration
+- npm/pip registry mirror configuration and proxy-based Docker pulls
 - GFW-related connectivity patterns
 - Chinese language triggers (网络问题, 连不上, 无法访问, 代理, 超时)
 - Proxy layer mismatch detection (Electron+Go, Docker Desktop, VS Code+extensions)
@@ -224,7 +224,7 @@ Built from real Chinese developer agent sessions with specific patterns:
 | npm timeout | `npm config set registry https://registry.npmmirror.com` |
 | pip timeout | `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple` |
 | Git failure | `git config --global http.proxy http://127.0.0.1:7890` |
-| Docker pull failure | Configure a registry mirror in `/etc/docker/daemon.json` |
+| Docker pull failure | Set `proxies` in `/etc/docker/daemon.json` or enable TUN mode (public China registry mirrors were shut down in 2024) |
 | DNS failure | Switch to 8.8.8.8 and flush the DNS cache |
 | Proxy not running | Start Clash/V2Ray and verify the listening port |
 | Expired SSL certificate | Update the certificate; development only: `NODE_TLS_REJECT_UNAUTHORIZED=0` |
@@ -283,7 +283,7 @@ network-troubleshoot-skill/
 | Stars | New | ~39,600 | ~183 | ~211 | ~511 |
 | Network troubleshooting focus | **Yes (core)** | No | No | No | Yes (core) |
 | Multi-agent support | **17+** | 1 (Cursor) | 3 | 4+ | 1 (Claude) |
-| Data-driven patterns | **112+ sessions** | No | No | No | No |
+| Data-driven patterns | **616 sessions (38 network-related)** | No | No | No | No |
 | China/GFW scenarios | **Yes** | No | No | No | No |
 | Resolution playbooks | **12+ fixes** | N/A | N/A | N/A | 112 skills |
 | Platform-specific (Win/Mac/Linux) | **All 3** | N/A | N/A | N/A | Linux |
@@ -293,23 +293,11 @@ network-troubleshoot-skill/
 
 > **Key differentiator**: This is the only repo that combines (1) multi-agent support across 17+ tools, (2) data-driven patterns from real sessions, (3) China/GFW-specific scenarios, and (4) zero-config copy-paste installation. [NetClaw](https://github.com/automateyournetwork/netclaw) is excellent for enterprise network engineers (BGP/OSPF/EVPN), while this project targets **developers** encountering network errors in their daily workflow.
 
-### Competitive Score
-
-| Metric | Score | Notes |
-|--------|-------|-------|
-| Uniqueness | **9/10** | Only multi-agent network troubleshooting skill with real session data |
-| Completeness | **8.5/10** | 17 agents, bilingual docs, playbooks, reference guide |
-| Practicality | **9/10** | Copy-paste install, zero config, immediate value |
-| Data-backed | **9/10** | 112+ real sessions extracted vs typical "hand-crafted" rules |
-| Documentation | **8.5/10** | Bilingual (EN/CN), reference guide, pattern analysis, comparison table |
-| Community potential | **7/10** | Niche but high-value; needs more visibility and contributor onboarding |
-| **Overall** | **8.5/10** | Best-in-class for developer network troubleshooting across AI agents |
-
 ## Data Sources
 
-1. **112+ coding agent interaction sessions** — Claude Code (577), KimiCode (25), Codex (11), Cursor (3)
+1. **616 coding agent interaction sessions, 38 of them network-related** — Claude Code (577 / 34), KimiCode (25 / 3), Codex (11 / 1), Cursor (3 / 0)
 2. **9 network troubleshooting patterns** extracted from real-world developer workflows
-3. **China-specific network scenarios** — proxy cascade, GFW patterns, registry mirrors
+3. **China-specific network scenarios** — proxy cascade, GFW patterns, package registry mirrors
 4. **Industry best practices** — curl, openssl, dig diagnostic references
 
 ## Contributing

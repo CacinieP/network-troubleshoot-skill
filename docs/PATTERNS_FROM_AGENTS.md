@@ -1,6 +1,6 @@
 # Network Troubleshooting Patterns from Coding Agent Interactions
 
-Patterns extracted from 112+ coding agent sessions across Claude Code, KimiCode, Codex, Cursor, and other tools.
+Patterns extracted from 616 coding agent sessions (38 network-related) across Claude Code, KimiCode, Codex, and Cursor.
 
 ## Data Sources
 
@@ -112,6 +112,8 @@ Pattern flow:
 5. Verify: `docker pull hello-world`
 
 **Key insight**: Docker daemon needs separate proxy/mirror configuration from the shell environment.
+
+**Update (2024+)**: the public China registry mirrors used in these sessions were shut down or restricted to provider intranets in 2024. Current guidance is proxy-based pulling (`proxies` in `daemon.json`) or TUN mode; see `skills/network-troubleshoot/SKILL.md`.
 
 ## Pattern 9: Proxy Layer Mismatch (Application Internal)
 

@@ -264,7 +264,7 @@ ping -n 20 <host> 2>&1 | tail -3  # Windows (output is localized, tail grabs sum
 # npm
 npm config list
 npm ping
-npm cache ls 2>/dev/null | head -5
+npm cache verify
 npm install --verbose <package> 2>&1 | head -50
 
 # pip
@@ -325,10 +325,11 @@ For users behind GFW (Great Firewall of China):
 3. **pip mirror**: `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple`
    If SSL trust errors occur: `pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn`
 
-4. **Docker mirror**: Configure mirror in `/etc/docker/daemon.json`
+4. **Docker pulls**: Prefer proxy-based pulling — configure `proxies` in `/etc/docker/daemon.json` (Docker Engine 23+), then restart the daemon; or enable TUN mode in the proxy app
    ```json
-   {"registry-mirrors": ["https://mirror.ccs.tencentyun.com"]}
+   {"proxies": {"http-proxy": "http://127.0.0.1:7890", "https-proxy": "http://127.0.0.1:7890", "no-proxy": "localhost,127.0.0.0/8"}}
    ```
+   Public China registry mirrors were largely shut down or restricted to provider intranets in 2024; only add `registry-mirrors` for a mirror documented by your own cloud provider.
 
 5. **Git proxy**: `git config --global http.proxy http://127.0.0.1:7890`
 
